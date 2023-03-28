@@ -1,270 +1,607 @@
-# Rook Health Connect SDK
+# SDK Health Connect in React Native
 
-This SDK enables apps to extract data from Google Health Connect. `rook_health_connect` is part of Rook Extraction, a series of SDKs dedicated to extracting Health Data from a variety of [Data Sources](https://docs.tryrook.io/docs/Definitions#data-sources).
+Steps to integrate Apple Health Data extraction and transmission into your app.
 
-This SDK was developed with the Health Connect [native SDK](https://developer.android.com/guide/health-and-fitness/health-connect), so all its limitations and requirements apply to this SDK as well.
+## Contentes
 
-## Features
+1. [Installation](#installation)
+2. [Configuration](#configuration)
+3. [Package usage](#packageUsage)
 
-- Check for Health Connect app availability.
-- Check and request permissions.
-- Retrieve a [Sleep Summary](https://docs.tryrook.io/docs/DataStructure/SleepHealth#summaries) from a specific day.
-- Retrieve a [Physical Summary](https://docs.tryrook.io/docs/DataStructure/PhysicalHealth#summaries) from a specific day.
-- Retrieve a [Body Summary](https://docs.tryrook.io/docs/DataStructure/BodyHealth#summaries) from a specific day.
+   1. [useRookHCBody](#useRookHCBody)
+   2. [useRookHCPermissions](#useRookHCPermissions)
+   3. [useRookHCPhysical](#useRookHCPhysical)
+   4. [useRookHCSleep](#useRookHCSleep)
 
-## Installation
+## Installation <a id="instalation"></a>
 
-![Maven Central](https://img.shields.io/maven-central/v/com.rookmotion.android/rook-health-connect?color=%23F44336)
+To build a project using the Rook Health Connect in React native you need to use at least react v16 and react native v65. This SDK is only available on **Android** this means that it won't work with iOS.
 
-Add the following line to your dependencies (app-level build.gradle):
+1. Install the dependencies
 
-```groovy
-implementation 'com.rookmotion.android:rook-health-connect:version'
+**npm**
+
+```bash
+npm i rook_health_connect
 ```
 
-## Getting started
+**yarn**
 
-To get authorization to use this SDK, you'll need to install and configure the [rook-auth](https://mvnrepository.com/artifact/com.rookmotion.android/rook-auth) SDK.
+```bash
+yarn add rook_health_connect
+```
 
-### Android Configuration
+## Configuration <a id="configuration"></a>
 
-In your **AndroidManifest.xml**, add a query for Health Connect:
+Add your client uuid in order to be authorized, follow the next example, add at the top level of your tree components the RookConnectProvider.
+
+```tsx
+import {RookConnectProvider} from 'rook_auth';
+
+const App => () {
+  return (
+    <RookConnectProvider
+      keys={{
+        clientUUID: 'YOUR-CLIENT-UUID',
+      }}>
+      <YourComponents />
+    </RookConnectProvider>
+  );
+}
+```
+
+Then we need to configure the android project. open the android project inside android studio. We need to modify the `AndroidManifest.xml` file at the top level paste the next permissions in order to access to the Health connection records.
 
 ```xml
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
+    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
+    <uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED" />
+    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
+    <uses-permission android:name="android.permission.health.READ_VO2_MAX" />
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
+    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+    <uses-permission android:name="android.permission.health.READ_SPEED" />
+    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
+    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
+    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
+    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
+    <uses-permission android:name="android.permission.health.READ_HYDRATION" />
+    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
 
-<manifest>
+```
+
+Into the same file we need to add a query.
+
+```xml
+<queries>
+  <package android:name="com.google.android.apps.healthdata" />
+</queries>
+```
+
+Finally we need to add inside your activity tag an intent filter to open Health Connect APP
+
+```xml
+<intent-filter>
+  <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+</intent-filter>
+```
+
+Your `AndroidManifest.xml` file should look like this
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
+    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
+    <uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED" />
+    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
+    <uses-permission android:name="android.permission.health.READ_VO2_MAX" />
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
+    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+    <uses-permission android:name="android.permission.health.READ_SPEED" />
+    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
+    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
+    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
+    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
+    <uses-permission android:name="android.permission.health.READ_HYDRATION" />
+    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
+
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
     </queries>
+
+    <application
+      ...>
+      <activity
+        ...>
+        <intent-filter>
+            ...
+        </intent-filter>
+
+          <intent-filter>
+              <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+          </intent-filter>
+
+      </activity>
+    </application>
 </manifest>
 
 ```
 
-Then declare the health permissions used by this SDK:
+Other file that we need to visit is the `android/settings.gradle` include the next code
 
-```text
-<uses-permission android:name="android.permission.health.READ_SLEEP" />
-<uses-permission android:name="android.permission.health.READ_STEPS" />
-<uses-permission android:name="android.permission.health.READ_DISTANCE" />
-<uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
-<uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED" />
-<uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
-<uses-permission android:name="android.permission.health.READ_VO2_MAX" />
-<uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-<uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-<uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-<uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
-<uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
-<uses-permission android:name="android.permission.health.READ_EXERCISE" />
-<uses-permission android:name="android.permission.health.READ_SPEED" />
-<uses-permission android:name="android.permission.health.READ_WEIGHT" />
-<uses-permission android:name="android.permission.health.READ_HEIGHT" />
-<uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
-<uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-<uses-permission android:name="android.permission.health.READ_HYDRATION" />
-<uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
-
+```gradle
+include ':react-native-shared-preferences', ':app'
+project(':react-native-shared-preferences').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-shared-preferences/android')
 ```
 
-Finally, inside the Activity that you use to display your app's privacy policy, add an intent filter for the Health Connect permissions action:
-
-```xml
-
-<activity android:name=".ui.health_connect.HCPrivacyPolicyActivity" android:enabled="true"
-    android:exported="true">
-
-    <intent-filter>
-        <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-    </intent-filter>
-</activity>
+In `android/app/build.gradle`
 
 ```
-
-In your build.gradle (app), set your min and target sdk version like below:
-
-```groovy
-minSdk 26
-targetSdk 33
-
+dependencies {
+  ...
+  implementation project(":react-native-shared-preferences")
+  implementation "com.rookmotion.android:rook-rn-health-connect:0.3.0"
+}
 ```
 
-This package will only work with devices of SDK 28 or later. The `minSdk 26` is to keep compatibility with other Rook SDKs that can be used with older SDKs.
+Into the same file we need to set the `minSdkVersion` and `targetSdkVerion`
 
-### Logging
-
-If you want to see the logs generated by this SDK, when creating an instance of `RookHealthConnectManager`, provide a logLevel:
-
-```
-RookHealthConnectManager(logLevel = "ADVANCED")
-
-```
-
-Available levels:
-
-- "ADVANCED" -> All logs from API. All logs from SDK.
-- "BASIC" -> Basic logs from API. All logs from SDK.
-- "NONE" -> No logs.
-
-## Usage
-
-Create an instance of `RookHealthConnectManager` providing a context:
-
-```kotlin
-val manager = RookHealthConnectManager(context)
-
+```gradle
+android {
+  ...
+  minSdkVersion: 26
+  targetSdkVersion 33
+  ...
+}
 ```
 
-### Privacy policy
+The last step register the modules in `MainApplication.java`
 
-Health Connect requires a privacy policy where you inform your users how you will handle and use their data.
+```java
+  import com.rook.rnrookhealthconnect.RNRookHCPackager;
+  import in.sriraman.sharedpreferences.RNSharedPreferencesReactPackage;
 
-In the [Android configuration](#android-configuration) section, an intent filter was added to listen when your app is launched from said intent. You can use a dedicated Activity, or if you are using a **Single activity architecture**, you can use Deeplink. You can find an example of the first approach in our demo app.
+  public class MainApplication extends Application implements ReactApplication {
 
-### Check compatibility
+    @Override
+    protected List<ReactPackage> getPackages() {
+      List<ReactPackage> packages = new PackageList(this).getPackage();
 
-Before using any of the features of `rook_health_connect`, you need to ensure the user's device is compatible with Health Connect and check if the [APP](https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata) is installed.
+      packages.add(new RNSharedPreferencesReactPackage());
+      packages.add(new RNRookHCPackager());
 
-Call `checkAvailability` to check for the app. This will return an `AvailabilityStatus`.
-
-| Status | Description | What to do |
-| --- | --- | --- |
-| INSTALLED | App is installed | Proceed to check permissions |
-| NOT_INSTALLED | App is not installed | Prompt the user to install Health Connect. |
-| NOT_SUPPORTED | This device does not support Health Connect | Take the user out of the Health Connect section |
-
-### Permissions
-
-#### Check
-
-There are dedicated functions for each [Health Pillar](https://docs.tryrook.io/docs/Definitions#health-data-pillars) (Sleep, Physical, and Body) to check permissions. These functions follow the convention: `has_data_type_Permissions`.
-
-You can also call `hasAllPermissions` to check if your app has all the permissions required to extract data from all health pillars.
-
-```kotlin
-fun checkPermissions() {
-    scope.launch {
-        val result = manager.hasAllPermissions()
-
-        if (result) {
-            // The app has permissions.
-        } else {
-            // The app does not have permissions.
-        }
+      return packages;
     }
+  }
+```
+
+## Package usage <a id="packageUsage"></a>
+
+### useRookHCBody <a id="useRookHCBody"></a>
+
+**Definition**
+
+If you need more details about BodySummary please use right click an **Go to definition** to se the whole definition
+
+```ts
+const useRookHCBody: () => RookHCBody;
+
+interface RookHCBody {
+  getBodySummaryLastDate: () => Promise<string>;
+  hasBodyPermissions: () => Promise<boolean>;
+  requestBodyPermissions: () => Promise<void>;
+  getBodySummary: (date: string) => Promise<BodySummary>;
+}
+```
+
+- `getBodySummaryLastDate`: Check the last date when you fetch data of body data
+- `hasBodyPermissions`: Return a boolean showing if body data are allowed
+- `requestBodyPermissions`: Request permissions only for body data
+- `getBodySummary`: Fetch body summary, the date should be in format YYYY-MM-DD
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
+
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button, TextInput } from "react-native";
+import { useRookHCBody } from "rook_health_connect";
+
+export const BodyExample = () => {
+  const [date, setDate] = useState("");
+  const [data, setData] = useState("{}");
+
+  const {
+    getBodySummaryLastDate,
+    hasBodyPermissions,
+    requestBodyPermissions,
+    getBodySummary,
+  } = useRookHCBody();
+
+  const handleLastDate = async (): Promise<void> => {
+    try {
+      const result = await getBodySummaryLastDate();
+      setData(result);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handlePermissions = async (): Promise<void> => {
+    try {
+      const result = await hasBodyPermissions();
+      setData(`hasPermissions ${result}`);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleRequestPermissions = async (): Promise<void> => {
+    try {
+      await requestBodyPermissions();
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleSummary = async (): Promise<void> => {
+    try {
+      // The date should be in the format YYYY-MM-DD
+      const r = await getBodySummary(date);
+      setData(JSON.stringify(r));
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  return (
+    <View>
+      <Text>body</Text>
+      <TextInput
+        placeholder="YYYY-MM-DD"
+        onChangeText={(text) => setDate(text)}
+      />
+      <Button title="last Date" onPress={handleLastDate} />
+      <Button title="hasAllPermissions" onPress={handlePermissions} />
+      <Button
+        title="requestAllPermissions"
+        onPress={handleRequestPermissions}
+      />
+      <Button title="get summary" onPress={handleSummary} />
+      <Text>{data}</Text>
+    </View>
+  );
+};
+```
+
+### useRookHCPermissions <a id="useRookHCPermissions"></a>
+
+**Definition**
+
+```ts
+const useRookHCPermissions: () => RookHCPermissions;
+
+interface RookHCPermissions {
+  checkAvailability: () => Promise<AvailabilityStatus>;
+  hasAllPermissions: () => Promise<boolean>;
+  requestPermissions: () => Promise<void>;
+  openHealthConnectSettings: () => Promise<void>;
 }
 
+type AvailabilityStatus = "INSTALLED" | "NOT_INSTALLED" | "NOT_SUPPORTED";
 ```
 
-#### Request
+- `checkAvailability`: Checks if the health connect service is supported
 
-There are dedicated functions for each health pillar (Sleep, Physical, and Body) to request permissions. These functions follow the convention: `request_data_type_Permissions`.
+Return
 
-You can also call `requestAllPermissions` and provide an `Activity` instance to request all health pillar permissions.
+- `AvailabilityStatus` means if health connect services are available in the device
 
-```kotlin
-fun requestPermissions(activity: Activity) {
-    val result = manager.requestAllPermissions(activity)
+  - `INSTALLED` means health connect services are available
+  - `NOT_INSTALLED` means health connect services are available but is necessary to install the health connect app into the device
+  - `NOT_SUPPORTED` means health connect services are not available
 
-    if (result) {
-        // A request to Health Connect to open the permissions screen was sent.
-        // Health Connect can receive the request but refuse to open the permissions screen. In those cases, 'result' will also be true
-    } else {
-        // The request was not sent.
+- `hasAllPermissions`: Check if the you already request all health connect permissions
+- `requestPermissions`: Request all health connect permissions
+- `openHealthConnectSettings`: Open the health connect settings
+
+**Example**
+
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button } from "react-native";
+import { useRookHCPermissions } from "rook_health_connect";
+
+export const PermissionsExample = () => {
+  const [data, setData] = useState("");
+
+  const {
+    checkAvailability,
+    hasAllPermissions,
+    requestPermissions,
+    openHealthConnectSettings,
+  } = useRookHCPermissions();
+
+  const handleAvailability = async (): Promise<void> => {
+    try {
+      const result = await checkAvailability();
+      setData(result);
+    } catch (error) {
+      setData(`${error}`);
     }
-}
+  };
 
+  const handlePermissions = async (): Promise<void> => {
+    try {
+      const result = await hasAllPermissions();
+      setData(`has permissions ${result}`);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleRequestPermissions = async (): Promise<void> => {
+    try {
+      await requestPermissions();
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleOpen = async (): Promise<void> => {
+    try {
+      await openHealthConnectSettings();
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  return (
+    <View>
+      <Text>Hola</Text>
+      <Button title="Availability" onPress={handleAvailability} />
+      <Button title="hasAllPermissions" onPress={handlePermissions} />
+      <Button
+        title="requestAllPermissions"
+        onPress={handleRequestPermissions}
+      />
+      <Button title="openHC" onPress={handleOpen} />
+      <Text>{data}</Text>
+    </View>
+  );
+};
 ```
 
-**Permissions denied**
+### useRookHCPhysical <a id="useRookHCPhysical"></a>
 
-If the user clicks cancel or navigates away from the permissions screen, Health Connect will take it as if the user denied the permissions.
+**Definition**
 
-If the user 'denies' the permissions 2 times, your app will be blocked by Health Connect. This is permanent and cannot be undone even if the user uninstalls your app.
+If you need more details about PhysicalSummary or PhysicalEvents please use right click an **Go to definition** to se the whole definition
 
-When your app is blocked, any permissions request will be ignored.
+```ts
+const useRookHCPhysical: () => RookHCPhysical;
 
-To solve this problem, we recommend you also include an `Open Health Connect` button in your permissions UI. This button will call `openHealthConnectSettings`, and your users can manually grant permissions to your app.
-
-```kotlin
-fun openHealthConnectSettings() {
-    val result = manager.openHealthConnectSettings()
-
-    if (result) {
-        // A request to open Health Connect was sent.
-    } else {
-        // The request was not sent.
-    }
+interface RookHCPhysical {
+  getPhysicalSummaryLastDate: () => Promise<string>;
+  getPhysicalEventsLastDate: () => Promise<string>;
+  hasPhysicalPermissions: () => Promise<boolean>;
+  requestPhysicalPermissions: () => Promise<void>;
+  getPhysicalSummary: (date: string) => Promise<PhysicalSummary>;
+  getPhysicalEvents: (date: string) => Promise<PhysicalEvents>;
 }
-
 ```
 
-### Retrieving data
+- `getPhysicalSummaryLastDate`: Check the last date when you fetch data of physical summary
+- `getPhysicalEventsLastDate`: Check the last date when you fetch data of physical events
+- `hasPhysicalPermissions`: Return a boolean showing if physical data are allowed
+- `requestPhysicalPermissions`: Request permissions only for physical data
+- `getPhysicalSummary`: Fetch physical summary, the date should be in format YYYY-MM-DD
+- `getPhysicalEvents`: Fetch physical events, the date should be in format YYYY-MM-DD
 
-To retrieve any type of summary, you need to provide a date. This date cannot be the current day and cannot be older than 29 days. See the examples below:
+**NOTE:** The date should be formatted as YYYY-MM-DD
 
-| Current date | Provided date | Is valid? |
-| --- | --- | --- |
-| @January 8, 2023 | @January 8, 2023 | No, the date is today |
-| @January 8, 2023 | @January 7, 2023 | Yes, the date is from yesterday |
-| @January 8, 2023 | @November 1, 2022 | No, the date is older than 29 days |
-| @January 8, 2023 | @January 1, 2023 | Yes, the date is 7 days old |
+**Example**
 
-To get health data, call `get_data_type` and provide a `ZonedDateTime` instance of the day you want to retrieve the data from.
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button, TextInput } from "react-native";
+import { useRookHCPhysical } from "rook_health_connect";
 
-For example, if you want to get yesterday's sleep summary, call `getSleepSummary`. It will return a `SleepSummary` instance or throw an exception if an error happens or if there is no sleep data on that day.
+export const PhysicalView = () => {
+  const [data, setData] = useState("{}");
+  const [date, setDate] = useState("");
 
-```kotlin
-fun getSleepSummary() {
-    scope.launch {
-        try {
-            val date = ZonedDateTime.now().minusDays(1)
-            val result = manager.getSleepSummary(date)
+  const {
+    getPhysicalSummaryLastDate,
+    getPhysicalEventsLastDate,
+    hasPhysicalPermissions,
+    requestPhysicalPermissions,
+    getPhysicalSummary,
+    getPhysicalEvents,
+  } = useRookHCPhysical();
 
-            // Success
-        } catch (e: Exception) {
-            // Manage error
-        }
+  const handleLastDate = async (): Promise<void> => {
+    try {
+      const result = await getPhysicalSummaryLastDate();
+      setData(result);
+    } catch (error) {
+      setData(`${error}`);
     }
-}
+  };
 
+  const handleLastDateEvent = async (): Promise<void> => {
+    try {
+      const result = await getPhysicalEventsLastDate();
+      setData(result);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handlePermissions = async (): Promise<void> => {
+    try {
+      const result = await hasPhysicalPermissions();
+      setData(`hasPermissions ${result}`);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleRequestPermissions = async (): Promise<void> => {
+    try {
+      await requestPhysicalPermissions();
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleSummary = async (): Promise<void> => {
+    try {
+      const r = await getPhysicalSummary(date);
+      setData(JSON.stringify(r));
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleEventSummary = async (): Promise<void> => {
+    try {
+      const r = await getPhysicalEvents(date);
+      setData(JSON.stringify(r));
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  return (
+    <View>
+      <Text>Physical</Text>
+      <TextInput
+        placeholder="YYYY-MM-DD"
+        onChangeText={(text) => setDate(text)}
+      />
+      <Button title="last Date" onPress={handleLastDate} />
+      <Button title="last Date event" onPress={handleLastDateEvent} />
+      <Button title="hasAllPermissions" onPress={handlePermissions} />
+      <Button
+        title="requestAllPermissions"
+        onPress={handleRequestPermissions}
+      />
+      <Button title="get summary" onPress={handleSummary} />
+      <Button title="get summary event" onPress={handleEventSummary} />
+      <Text>{data}</Text>
+    </View>
+  );
+};
 ```
 
-### Keeping track of the last time a summary was retrieved
+### useRookHCSleep <a id="useRookHCSleep"></a>
 
-Health Connect does not allow retrieving data in the background, so every time your users open your app, you should retrieve the data manually to help you retrieve the data of the days the user did not open your app. We store in preferences the last date data was retrieved from (even if that attempt resulted in no data being found).
+**Definition**
 
-Depending on the data type, there are multiple functions to retrieve that date. They follow the convention: `get_data_type_LastDate`.
+If you need more details about SleepSummary please use right click an **Go to definition** to se the whole definition
 
-It will return a `ZonedDateTime` instance.
+```ts
+const useRookHCSleep: () => RookHCSleep;
 
-#### Example
-
-Let's suppose that one of your users opens the app on `2023-01-10`. The app then retrieves a sleep summary from yesterday (`2023-01-09`) with `getSleepSummary`, gets the summary, and sends it to the backend.
-
-Then the user forgets to open the app until `2023-01-15`. Then you'll call `getSleepSummaryLastDate`. It will return `2023-01-09` in a `ZonedDateTime` instance. Now, in a loop, you can recover data from the days the user did not open the app (`2023-01-10` to `2023-01-14`).
-
-An example using sleep summaries is detailed below:
-
-```kotlin
-fun recoverLostDays() {
-    scope.launch {
-        val today = LocalDate.now()
-        var date = manager.getSleepSummaryLastDate().toLocalDate()
-
-        date = date.plusDays(1)
-
-        while (date.isBefore(today)) {
-            try {
-                val result = manager.getSleepSummary(date.atStartOfDay(ZoneId.systemDefault()))
-
-                // Success
-            } catch (e: Exception) {
-                // Manage error
-            }
-
-            date = date.plusDays(1)
-        }
-    }
+interface RookHCSleep {
+  getSleepSummaryLastDate: () => Promise<string>;
+  hasSleepPermissions: () => Promise<boolean>;
+  requestSleepPermissions: () => Promise<void>;
+  getSleepSummary: (date: string) => Promise<SleepSummary>;
 }
+```
 
+- `getSleepSummaryLastDate`: Check the last date when you fetch data of sleep data
+- `hasSleepPermissions`: Return a boolean showing if sleep data are allowed
+- `requestSleepPermissions`: Request permissions only for sleep data
+- `getSleepSummary`: Fetch sleep summary, the date should be in format YYYY-MM-DD
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
+
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button, TextInput } from "react-native";
+import { useRookHCSleep } from "rook_health_connect";
+
+export const SleepView = () => {
+  const [date, setDate] = useState("");
+  const [data, setData] = useState("{}");
+
+  const {
+    getSleepSummaryLastDate,
+    hasSleepPermissions,
+    requestSleepPermissions,
+    getSleepSummary,
+  } = useRookHCSleep();
+
+  const handleLastDate = async (): Promise<void> => {
+    try {
+      const result = await getSleepSummaryLastDate();
+      setData(result);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handlePermissions = async (): Promise<void> => {
+    try {
+      const result = await hasSleepPermissions();
+      setData(`hasPermissions ${result}`);
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleRequestPermissions = async (): Promise<void> => {
+    try {
+      await requestSleepPermissions();
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  const handleSummary = async (): Promise<void> => {
+    try {
+      const r = await getSleepSummary(date);
+      setData(JSON.stringify(r));
+    } catch (error) {
+      setData(`${error}`);
+    }
+  };
+
+  return (
+    <View>
+      <Text>sleep</Text>
+      <TextInput
+        placeholder="YYYY-MM-DD"
+        onChangeText={(text) => setDate(text)}
+      />
+      <Button title="last Date" onPress={handleLastDate} />
+      <Button title="hasAllPermissions" onPress={handlePermissions} />
+      <Button
+        title="requestAllPermissions"
+        onPress={handleRequestPermissions}
+      />
+      <Button title="get summary" onPress={handleSummary} />
+      <Text>{data}</Text>
+    </View>
+  );
+};
 ```

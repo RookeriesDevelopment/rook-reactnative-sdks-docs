@@ -1,6 +1,6 @@
 # SDK Health Connect in React Native
 
-Steps to integrate Apple Health Data extraction and transmission into your app.
+Steps to integrate Health Connect Data extraction and transmission into your app.
 
 ## Contentes
 

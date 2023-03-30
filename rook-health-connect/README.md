@@ -2,7 +2,7 @@
 
 Steps to integrate Health Connect Data extraction and transmission into your app.
 
-## Contentes
+## Content
 
 1. [Installation](#installation)
 2. [Configuration](#configuration)

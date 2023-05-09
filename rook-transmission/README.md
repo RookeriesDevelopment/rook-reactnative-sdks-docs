@@ -38,6 +38,8 @@ const App => () {
     <RookConnectProvider
       keys={{
         clientUUID: 'YOUR-CLIENT-UUID',
+        apiURL: 'API-URL',
+        password: 'YOUR-PASSWORD',
       }}>
       <YourComponents />
     </RookConnectProvider>

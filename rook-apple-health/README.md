@@ -114,7 +114,69 @@ interface RookHCBody {
 
 **Example**
 
-// TODO: UPDATE EXAMPLE HERE
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button, StyleSheet, TextInput } from "react-native";
+import { useRookAHBody } from "react-native-rook_ah";
+
+export const Body = () => {
+  const [date, setDate] = useState("");
+
+  const { ready, getLastExtractionDateOfBody, getBodySummary } =
+    useRookAHBody();
+
+  const onLastDate = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfBody();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onBodySummary = async (): Promise<void> => {
+    try {
+      const response = await getBodySummary(date);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return ready ? (
+    <View>
+      <Text>Body</Text>
+
+      <TextInput
+        placeholder="yyyy-mm-dd"
+        style={styles.input}
+        value={date}
+        onChangeText={(text) => setDate(text)}
+      />
+      <Button title="Last Date" onPress={onLastDate} />
+      <Button title="Get Body Summary" onPress={onBodySummary} />
+
+      <JSONTree data={data} />
+    </View>
+  ) : (
+    <Text>Loading</Text>
+  );
+};
+
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: "5%",
+    borderColor: "white",
+    color: "white",
+    borderWidth: 1,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+});
+```
 
 ### useRookAHPermissions <a id="useRookAHPermissions"></a>
 
@@ -140,7 +202,46 @@ interface RookAHPermissions {
 
 **Example**
 
-// TODO: update example
+```tsx
+import React from "react";
+import { useRookAHPermissions } from "react-native-rook_ah";
+import { Button, View, Text } from "react-native";
+
+export const Permissions = () => {
+  const {
+    requestSleepPermissions,
+    requestPhysicalPermissions,
+    requestBodyPermissions,
+    requestAllPermissions,
+  } = useRookAHPermissions();
+
+  const onSleepPermissions = async (): Promise<void> => {
+    await requestSleepPermissions();
+  };
+
+  const onPhysicalPermissions = async (): Promise<void> => {
+    await requestPhysicalPermissions();
+  };
+
+  const onBodyPermissions = async (): Promise<void> => {
+    await requestBodyPermissions();
+  };
+
+  const onAllPermissions = async (): Promise<void> => {
+    await requestAllPermissions();
+  };
+
+  return (
+    <View>
+      <Text>Permissions</Text>
+      <Button title="Sleep Permissions" onPress={onSleepPermissions} />
+      <Button title="Physical Permissions" onPress={onPhysicalPermissions} />
+      <Button title="Body Permissions" onPress={onBodyPermissions} />
+      <Button title="All Permissions" onPress={onAllPermissions} />
+    </View>
+  );
+};
+```
 
 ### useRookAHPhysical <a id="useRookAHPhysical"></a>
 
@@ -166,7 +267,69 @@ interface RookAHPhysical {
 
 **Example**
 
-// TODO: Update the example
+```tsx
+import React, { useState } from "react";
+import { View, Text, Button, StyleSheet, TextInput } from "react-native";
+import { useRookAHPhysical } from "react-native-rook_ah";
+
+export const Physical = () => {
+  const [date, setDate] = useState("");
+
+  const { ready, getLastExtractionDateOfPhysical, getPhysicalSummary } =
+    useRookAHPhysical();
+
+  const onLastDate = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfPhysical();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPhysicalSummary = async (): Promise<void> => {
+    try {
+      const response = await getPhysicalSummary(date);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return ready ? (
+    <View>
+      <Text>Body</Text>
+
+      <TextInput
+        placeholder="yyyy-mm-dd"
+        style={styles.input}
+        value={date}
+        onChangeText={(text) => setDate(text)}
+      />
+      <Button title="Last Date" onPress={onLastDate} />
+      <Button title="Get Body Summary" onPress={onPhysicalSummary} />
+
+      <JSONTree data={data} />
+    </View>
+  ) : (
+    <Text>Loading</Text>
+  );
+};
+
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: "5%",
+    borderColor: "white",
+    color: "white",
+    borderWidth: 1,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+});
+```
 
 ### useRookAHSleep <a id="useRookAHSleep"></a>
 
@@ -192,4 +355,78 @@ interface RookAHPhysical {
 
 **Example**
 
-// TODO: Update the example
+```tsx
+import React, { useState } from 'react';
+import { View, Text, Button, StyleSheet, TextInput } from 'react-native';
+import { useRookAHSleep } from 'react-native-rook_ah';
+
+export const Sleep = () => {
+  const [date, setDate] = useState('');
+
+  const { ready, getLastExtractionDateOfSleep, getSleepSummary } =
+    useRookAHSleep();
+
+  const onLastDate = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfSleep();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onSleepSummary = async (): Promise<void> => {
+    try {
+      const response = await getSleepSummary(date);
+      console.log(response));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return ready ? (
+    <View>
+      <Text
+        style={[
+          Fonts.textPrimary,
+          Fonts.textBold,
+          Fonts.textRegular,
+          Fonts.textCenter,
+          Gutters.smallTMargin,
+          Gutters.smallBMargin,
+        ]}
+      >
+        Sleep
+      </Text>
+
+      <TextInput
+        placeholder="yyyy-mm-dd"
+        style={styles.input}
+        value={date}
+        onChangeText={text => setDate(text)}
+      />
+      <Button title="Last Date" onPress={onLastDate} />
+      <Button title="Get Sleep Summary" onPress={onSleepSummary} />
+
+      <JSONTree data={data} />
+    </View>
+  ) : (
+    <Text>Loading</Text>
+  );
+};
+
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: '5%',
+    borderColor: 'white',
+    color: 'white',
+    borderWidth: 1,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+});
+
+```

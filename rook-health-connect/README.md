@@ -22,13 +22,13 @@ To build a project using the Rook Health Connect in React native you need to use
 **npm**
 
 ```bash
-npm i rook_health_connect
+npm i react-native-rook-health-connect
 ```
 
 **yarn**
 
 ```bash
-yarn add rook_health_connect
+yarn add react-native-rook-health-connect
 ```
 
 ## Configuration <a id="configuration"></a>
@@ -54,39 +54,7 @@ const App => () {
 
 Then we need to configure the android project. open the android project inside android studio. We need to modify the `AndroidManifest.xml` file at the top level paste the next permissions in order to access to the Health connection records.
 
-```xml
-    <uses-permission android:name="android.permission.health.READ_SLEEP" />
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
-    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
-    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
-    <uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED" />
-    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
-    <uses-permission android:name="android.permission.health.READ_VO2_MAX" />
-    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
-    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
-    <uses-permission android:name="android.permission.health.READ_SPEED" />
-    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
-    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
-    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
-    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-    <uses-permission android:name="android.permission.health.READ_HYDRATION" />
-    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
-
-```
-
-Into the same file we need to add a query.
-
-```xml
-<queries>
-  <package android:name="com.google.android.apps.healthdata" />
-</queries>
-```
-
-Finally we need to add inside your activity tag an intent filter to open Health Connect APP
+We need to add inside your activity tag an intent filter to open Health Connect APP
 
 ```xml
 <intent-filter>
@@ -99,30 +67,7 @@ Your `AndroidManifest.xml` file should look like this
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.health.READ_SLEEP" />
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
-    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
-    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
-    <uses-permission android:name="android.permission.health.READ_ELEVATION_GAINED" />
-    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
-    <uses-permission android:name="android.permission.health.READ_VO2_MAX" />
-    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
-    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
-    <uses-permission android:name="android.permission.health.READ_SPEED" />
-    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
-    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
-    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
-    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-    <uses-permission android:name="android.permission.health.READ_HYDRATION" />
-    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
-
-    <queries>
-        <package android:name="com.google.android.apps.healthdata" />
-    </queries>
+    ...
 
     <application
       ...>
@@ -155,7 +100,6 @@ In `android/app/build.gradle`
 dependencies {
   ...
   implementation project(":react-native-shared-preferences")
-  implementation "com.rookmotion.android:rook-rn-health-connect:0.3.0"
 }
 ```
 
@@ -173,7 +117,6 @@ android {
 The last step register the modules in `MainApplication.java`
 
 ```java
-  import com.rook.rnrookhealthconnect.RNRookHCPackager;
   import in.sriraman.sharedpreferences.RNSharedPreferencesReactPackage;
 
   public class MainApplication extends Application implements ReactApplication {
@@ -183,7 +126,6 @@ The last step register the modules in `MainApplication.java`
       List<ReactPackage> packages = new PackageList(this).getPackage();
 
       packages.add(new RNSharedPreferencesReactPackage());
-      packages.add(new RNRookHCPackager());
 
       return packages;
     }

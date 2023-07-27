@@ -49,17 +49,7 @@ const App => () {
 }
 ```
 
-Then we need to configure the android project. open the android project inside android studio. We need to modify the `android/app/build.gradle` and add the next dependency.
-
-```gradle
-dependencies {
-  ...
-  implementation 'com.rookmotion.android:rook-rn-transmission:0.1.1'
-  ...
-}
-```
-
-Into the same file we need to set the `minSdkVersion` and `targetSdkVerion`
+Then we need to configure the android project. open the android project inside android studio. We need to modify the `android/app/build.gradle` we need to set the `minSdkVersion` and `targetSdkVerion`
 
 ```gradle
 android {
@@ -68,26 +58,6 @@ android {
   targetSdkVersion 33
   ...
 }
-```
-
-The last step register the modules in `MainApplication.java`
-
-```java
-  import com.rook.rnrookhealthconnect.RNRookHCPackager;
-  import in.sriraman.sharedpreferences.RNSharedPreferencesReactPackage;
-
-  public class MainApplication extends Application implements ReactApplication {
-
-    @Override
-    protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = new PackageList(this).getPackage();
-
-      // ADD this Line
-      packages.add(new RNRookTransmissionPackager());
-
-      return packages;
-    }
-  }
 ```
 
 ## Package usage <a id="packageUsage"></a>

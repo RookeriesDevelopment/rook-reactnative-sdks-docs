@@ -12,6 +12,7 @@ Steps to integrate Health Connect Data extraction and transmission into your app
    2. [useRookHCPermissions](#useRookHCPermissions)
    3. [useRookHCPhysical](#useRookHCPhysical)
    4. [useRookHCSleep](#useRookHCSleep)
+   5. [useRookHCEvents](#useRookHCEvents)
 
 ## Installation <a id="instalation"></a>
 
@@ -22,13 +23,13 @@ To build a project using the Rook Health Connect in React native you need to use
 **npm**
 
 ```bash
-npm i react-native-rook-health-connect@0.1.1
+npm i react-native-rook-health-connect
 ```
 
 **yarn**
 
 ```bash
-yarn add react-native-rook-health-connect0.1.1
+yarn add react-native-rook-health-connect
 ```
 
 ## Configuration <a id="configuration"></a>
@@ -546,6 +547,186 @@ export const SleepView = () => {
       <Button title="get summary" onPress={handleSummary} />
       <Text>{data}</Text>
     </View>
+  );
+};
+```
+
+### useRookHCEvents <a id="useRookHCEvents"></a>
+
+**Definition**
+
+If you need more details about the data that returns each event please use right click an **Go to definition** to se the whole definition
+
+```ts
+const useRookHCEvents: () => RookHCEvents;
+
+interface RookHCEvents {
+  getBodyBloodGlucoseEvents: (date: string) => Promise<HCBloodGlucoseEvent>;
+  getBodyBloodPressureEvents: (date: string) => Promise<HCBloodPressureEvent>;
+  getBodyMetricsEvents: (date: string) => Promise<HCBodyMetricsEvent>;
+  getBodyHeartRateEvents: (date: string) => Promise<HCHeartRateEvent>;
+  getBodyHydrationEvents: (date: string) => Promise<HCHydrationEvent>;
+  getBodyMoodEvents: (date: string) => Promise<HCMoodEvent>;
+  getBodyNutritionEvents: (date: string) => Promise<HCNutritionEvent>;
+  getBodyOxygenationEvents: (date: string) => Promise<HCOxygenationEvent>;
+  getPhysicalStressEvents: (date: string) => Promise<HCPhysicalEventStressData>;
+  getBodyTemperatureEvents: (date: string) => Promise<HCTemperatureEvent>;
+}
+```
+
+- `getBodyBloodGlucoseEvents`: Fetch events of blood glucose, the date should be in format YYYY-MM-DD
+- `getBodyBloodPressureEvents`: Fetch events of blood pressure, the date should be in format YYYY-MM-DD
+- `getBodyMetricsEvents`: Fetch events of body metrics like height, weight, bmi and others, the date should be in format YYYY-MM-DD
+- `getBodyHeartRateEvents`: Fetch events of heart rate, the date should be in format YYYY-MM-DD
+- `getBodyHydrationEvents`: Fetch events of hydration, the date should be in format YYYY-MM-DD
+- `getBodyMoodEvents`: Fetch events of body mood, the date should be in format YYYY-MM-DD
+- `getBodyNutritionEvents`: Fetch events of nutrition like calories, protein, fat, alcohol in take, the date should be in format YYYY-MM-DD
+- `getBodyOxygenationEvents`: Fetch events of oxygenation, the date should be in format YYYY-MM-DD
+- `getPhysicalStressEvents`: Fetch events of physical stress, the date should be in format YYYY-MM-DD
+- `getBodyTemperatureEvents`: Fetch events of body temperature, the date should be in format YYYY-MM-DD
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
+
+```tsx
+import React, { useState } from "react";
+import { Text, Button, ScrollView } from "react-native";
+import { useRookHCEvents } from "react-native-rook-health-connect";
+
+export const EventsView = () => {
+  const {
+    getBodyBloodGlucoseEvents,
+    getBodyBloodPressureEvents,
+    getBodyMetricsEvents,
+    getBodyHeartRateEvents,
+    getBodyHydrationEvents,
+    getBodyMoodEvents,
+    getBodyNutritionEvents,
+    getBodyOxygenationEvents,
+    getPhysicalStressEvents,
+    getBodyTemperatureEvents,
+  } = useRookHCEvents();
+
+  const [date, setDate] = useState("");
+
+  const handlePress = async (): Promise<void> => {
+    try {
+      const result = await getBodyBloodGlucoseEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handlePressureEvent = async (): Promise<void> => {
+    try {
+      const result = await getBodyBloodPressureEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBodyMetricsEvent = async (): Promise<void> => {
+    try {
+      const result = await getBodyMetricsEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBodyHeartRateEvents = async (): Promise<void> => {
+    try {
+      const result = await getBodyHeartRateEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBodyHydrationEvents = async (): Promise<void> => {
+    try {
+      const result = await getBodyHydrationEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBodyMoodEvents = async (): Promise<void> => {
+    try {
+      const result = await getBodyMoodEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBodyNutritionEvents = async (): Promise<void> => {
+    try {
+      const result = await getBodyNutritionEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBodyOxygenationEvents = async (): Promise<void> => {
+    try {
+      const result = await getBodyOxygenationEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handlePhysicalStressEvents = async (): Promise<void> => {
+    try {
+      const result = await getPhysicalStressEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handlePhysicalTemperatureEvents = async (): Promise<void> => {
+    try {
+      const result = await getBodyTemperatureEvents(date);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <ScrollView>
+      <Text>Events</Text>
+      <TextInput
+        placeholder="YYYY-MM-DD"
+        onChangeText={(text) => setDate(text)}
+      />
+      <Button title="Blood Glucose Event" onPress={handlePress} />
+      <Button title="Blood Pressure Event" onPress={handlePressureEvent} />
+      <Button title="Body Metrics Event" onPress={handleBodyMetricsEvent} />
+      <Button
+        title="Body HeartRate Event"
+        onPress={handleBodyHeartRateEvents}
+      />
+      <Button title="Hydration Events" onPress={handleBodyHydrationEvents} />
+      <Button title="Mood Events" onPress={handleBodyMoodEvents} />
+      <Button title="Nutrition Events" onPress={handleBodyNutritionEvents} />
+      <Button
+        title="Oxygenation Events"
+        onPress={handleBodyOxygenationEvents}
+      />
+      <Button title="Stress Events" onPress={handlePhysicalStressEvents} />
+      <Button
+        title="Temperature Events"
+        onPress={handlePhysicalTemperatureEvents}
+      />
+    </ScrollView>
   );
 };
 ```

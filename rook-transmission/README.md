@@ -19,13 +19,13 @@ To build a project using the Rook Transmission Health Connect in React native yo
 **npm**
 
 ```bash
-npm i react-native-rook-android-transmission
+npm i react-native-rook-android-transmission@0.1.1
 ```
 
 **yarn**
 
 ```bash
-yarn add react-native-rook-android-transmission
+yarn add react-native-rook-android-transmission@0.1.1
 ```
 
 ## Configuration <a id="configuration"></a>

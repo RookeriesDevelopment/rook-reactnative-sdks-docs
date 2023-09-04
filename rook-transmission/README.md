@@ -8,6 +8,7 @@ If you need a more detailed description example look at out [demo app](https://g
 
 ## Content
 
+0. [Docs for ios](#ios)
 1. [Installation](#installation)
 2. [Configuration](#configuration)
 3. [Package usage](#packageUsage)
@@ -1114,13 +1115,19 @@ const styles = StyleSheet.create({
 });
 ```
 
-# For iOS
+# For iOS <a id="ios"></a>
 
 ## Content
 
 1. [Installation](#installation-ios)
 2. [Configuration](#configuration-ios)
 3. [Package usage](#packageUsage-ios)
+   1. [useRookAHBodyTransmission](#useRookAHBodyTransmission)
+   2. [useRookAHPhysicalTransmission](#useRookAHPhysicalTransmission)
+   3. [useRookAHSleepTransmission](#useRookAHSleepTransmission)
+   4. [useRookAHActivityEventsTransmission](#useRookAHActivityEventsTransmission)
+   5. [useRookAHOxygenationEventsTransmission](#useRookAHOxygenationEventsTransmission)
+   6. [useRookAHHeartRateEventsTransmission](#useRookAHHeartRateEventsTransmission)
 
 ## Installation <a id="instalation-ios"></a>
 
@@ -1165,7 +1172,7 @@ const App => () {
 
 ## Package usage <a id="packageUsage-ios"></a>
 
-### useRookAHBodyTransmission <a id="useRookAHBody"></a>
+### useRookAHBodyTransmission <a id="useRookAHBodyTransmission"></a>
 
 **Definition**
 
@@ -1457,41 +1464,269 @@ export const PhysicalTransmission: FC<PhysicalTransmissionProps> = ({
 };
 ```
 
-### Bonus Register a user into Rook services
+### useRookAHActivityEventsTransmission <a id="useRookAHActivityEventsTransmission"></a>
+
+**Definition**
+
+If you need more details about Activity events please use right click an **Go to definition** to se the whole definition
+
+```ts
+type ActivityProps = {
+  userID: string;
+};
+const useRookAHActivityEventsTransmission: ({ userID }: ActivityProps) => {
+  enqueueActivityEvents: (data: ActivityEvent[]) => Promise<boolean>;
+  getCountActivityEvents: () => Promise<number>;
+  uploadActivityEvents: () => Promise<boolean>;
+};
+```
+
+- `enqueueActivityEvents`: saves the activity events to queue to later upload
+  - `data`: it's the summary to save
+- `getCountActivityEvents`: Retrieves the number of activity events queued to upload
+- `uploadActivityEvents`: Send the queue to the server
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
 
 ```tsx
-import { Platform } from "react-native";
-import { useRookUser } from "rook_users";
+import React from "react";
+import { Button, View } from "react-native";
+import { useRookAHActivityEventsTransmission } from "react-native-rook-transmission";
+import { useRookAHEvents } from "react-native-rook_ah";
 
-type useUserProps = {
-  user: string | number;
-};
-
-export const useUser = ({ user }: useUserProps) => {
-  const { ready, getUserID, registerUser } = useRookUser();
-
-  const checkUserID = async (): Promise<string> => {
-    if (!ready) {
-      throw new Error("The hook is not ready");
-    }
-
-    const saved = await getUserID();
-
-    if (saved) {
-      return saved.user_id;
-    }
-
-    const response = await registerUser({
-      user,
-      dataSource: Platform.OS === "android" ? "Health Connect" : "Apple Health",
+export const EventsView = () => {
+  const { enqueueActivityEvents, uploadActivityEvents, ...rest } =
+    useRookAHActivityEventsTransmission({
+      userID: "USER_ID",
     });
 
-    return response.user_id;
+  const { getActivityEvents } = useRookAHEvents();
+
+  const handleEnqueueActivityEvents = async (): Promise<void> => {
+    try {
+      const date = "2023-08-06";
+      const summary = await getActivityEvents(date);
+      const response = await enqueueActivityEvents(summary);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  return {
-    ready,
-    checkUserID,
+  const handleGetQueue = async (): Promise<void> => {
+    try {
+      const results = await rest.getCountActivityEvents();
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const handleUploadQueue = async (): Promise<void> => {
+    try {
+      const results = await uploadActivityEvents();
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <View>
+      <Button
+        title="Enqueue Activity events"
+        onPress={handleEnqueueActivityEvents}
+      />
+      <Button title="Get activity events" onPress={handleGetQueue} />
+
+      <Button title="Upload activity events" onPress={handleUploadQueue} />
+    </View>
+  );
+};
+```
+
+### useRookAHHeartRateEventsTransmission <a id="useRookAHHeartRateEventsTransmission"></a>
+
+**Definition**
+
+If you need more details about Heart rate events please use right click an **Go to definition** to se the whole definition
+
+```ts
+type HeartRateProps = {
+  userID: string;
+};
+const useRookAHHeartRateEventsTransmission: ({ userID }: HeartRateProps) => {
+  enqueueHeartRateEvents: (data: BodyHeartRateEvent[]) => Promise<boolean>;
+  getCountPhysicalHeartRateEvents: () => Promise<number>;
+  getCountBodyHeartRateEvents: () => Promise<number>;
+  uploadHeartRateEvents: () => Promise<boolean>;
+};
+```
+
+- `enqueueHeartRateEvents`: saves the heart rate events to queue to later upload
+  - `data`: it's the summary to save
+- `getCountPhysicalHeartRateEvents`: Retrieves the number of physical heart events queued to upload
+- `getCountBodyHeartRateEvents`: Retrieves the number of body heart rate events queued to upload
+- `uploadHeartRateEvents`: Send the queue to the server
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
+
+```tsx
+import React from "react";
+import { Button, View } from "react-native";
+import { useRookAHHeartRateEventsTransmission } from "react-native-rook-transmission";
+import { useRookAHEvents } from "react-native-rook_ah";
+
+export const HeartRateEventsView = () => {
+  const {
+    enqueueHeartRateEvents,
+    getCountBodyHeartRateEvents,
+    getCountPhysicalHeartRateEvents,
+    uploadHeartRateEvents,
+  } = useRookAHHeartRateEventsTransmission({
+    userID: "9808762",
+  });
+
+  const { getPhysicalHeartRateEvents, getBodyHeartRateEvents } =
+    useRookAHEvents();
+
+  const handleEnqueueEvents = async (): Promise<void> => {
+    try {
+      const date = "2023-08-06";
+      const summary = await getPhysicalHeartRateEvents(date);
+      const summary2 = await getBodyHeartRateEvents(date);
+
+      const response = await enqueueHeartRateEvents([...summary, ...summary2]);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGetQueue = async (): Promise<void> => {
+    try {
+      const results = await getCountBodyHeartRateEvents();
+      const results3 = await getCountPhysicalHeartRateEvents();
+
+      console.log(results + results3);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUploadQueue = async (): Promise<void> => {
+    try {
+      const results = await uploadHeartRateEvents();
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <View>
+      <Button title="Enqueue Heart Rate events" onPress={handleEnqueueEvents} />
+      <Button title="Get Heart Rate events" onPress={handleGetQueue} />
+
+      <Button title="Upload Heart Rate events" onPress={handleUploadQueue} />
+    </View>
+  );
+};
+```
+
+### useRookAHOxygenationEventsTransmission <a id="useRookAHOxygenationEventsTransmission"></a>
+
+**Definition**
+
+If you need more details about oxygenation events please use right click an **Go to definition** to se the whole definition
+
+```ts
+type OxygenationProps = {
+  userID: string;
+};
+const useRookAHOxygenationEventsTransmission: ({
+  userID,
+}: OxygenationProps) => {
+  enqueueOxygenationEvents: (data: BodyOxygenationEvent[]) => Promise<boolean>;
+  getCountPhysicalOxygenationEvents: () => Promise<number>;
+  getCountBodyOxygenationEvents: () => Promise<number>;
+  uploadOxygenationEvents: () => Promise<boolean>;
+};
+```
+
+- `enqueueOxygenationEvents`: saves the heart rate events to queue to later upload
+  - `data`: it's the summary to save
+- `getCountPhysicalOxygenationEvents`: Retrieves the number of physical oxygenation queued to upload
+- `getCountBodyOxygenationEvents`: Retrieves the number of body oxygenation events queued to upload
+- `uploadOxygenationEvents`: Send the queue to the server
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
+
+```tsx
+import React from "react";
+import { Button, View } from "react-native";
+import { useRookAHOxygenationEventsTransmission } from "react-native-rook-transmission";
+import { useRookAHEvents } from "react-native-rook_ah";
+
+export const OxygenationEventsView = () => {
+  const {
+    enqueueOxygenationEvents,
+    getCountBodyOxygenationEvents,
+    getCountPhysicalOxygenationEvents,
+    uploadOxygenationEvents,
+  } = useRookAHOxygenationEventsTransmission({
+    userID: "9808762",
+  });
+
+  const { getBodyOxygenationEvents } = useRookAHEvents();
+
+  const handleEnqueueEvents = async (): Promise<void> => {
+    try {
+      const date = "2023-08-06";
+      const summary = await getBodyOxygenationEvents(date);
+      const response = await enqueueOxygenationEvents(summary);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGetQueue = async (): Promise<void> => {
+    try {
+      const results = await getCountBodyOxygenationEvents();
+      const results3 = await getCountPhysicalOxygenationEvents();
+
+      console.log(results + results3);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUploadQueue = async (): Promise<void> => {
+    try {
+      const results = await uploadOxygenationEvents();
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <View>
+      <Button
+        title="Enqueue Oxygenation events"
+        onPress={handleEnqueueEvents}
+      />
+      <Button title="Get Oxygenation events" onPress={handleGetQueue} />
+
+      <Button title="Upload oxygenation events" onPress={handleUploadQueue} />
+    </View>
+  );
 };
 ```

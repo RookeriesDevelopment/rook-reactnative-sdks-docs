@@ -12,6 +12,7 @@ Steps to integrate Apple Health Data extraction and transmission into your app.
    2. [useRookAHPermissions](#useRookAHPermissions)
    3. [useRookAHPhysical](#useRookAHPhysical)
    4. [useRookAHSleep](#useRookAHSleep)
+   5. [useRookAHEvents](#useRookAHEvents)
 
 ## Installation <a id="instalation"></a>
 
@@ -429,4 +430,224 @@ const styles = StyleSheet.create({
   },
 });
 
+```
+
+### useRookAHEvents <a id="useRookAHEvents"></a>
+
+**Definition**
+
+If you need more details about the data that returns each event please use right click an **Go to definition** to se the whole definition
+
+```ts
+const useRookAHEvents: () => RookAHEvents;
+
+interface RookHCEvents {
+  ready: boolean;
+  getLastExtractionDateOfActivityEvents: () => Promise<string>;
+  getLastExtractionDateOfBodyOxygenationEvents: () => Promise<string>;
+  getLastExtractionDateOfPhysicalOxygenationEvents: () => Promise<string>;
+  getLastExtractionDateOfBodyHeartRateEvents: () => Promise<string>;
+  getLastExtractionDateOfPhysicalHeartRateEvents: () => Promise<string>;
+  getActivityEvents: (date: string) => Promise<ActivityEvent[]>;
+  getBodyOxygenationEvents: (date: string) => Promise<BodyOxygenationEvent[]>;
+  getPhysicalOxygenationEvents: (
+    date: string
+  ) => Promise<BodyOxygenationEvent[]>;
+  getBodyHeartRateEvents: (date: string) => Promise<BodyHeartRateEvent[]>;
+  getPhysicalHeartRateEvents: (
+    date: string
+  ) => Promise<PhysicalHeartRateEvent[]>;
+}
+```
+
+- `getLastExtractionDateOfActivityEvents`: Return the date of the last extraction of activity events
+- `getLastExtractionDateOfBodyOxygenationEvents`: Return the date of the last extraction of body oxygenation events
+- `getLastExtractionDateOfPhysicalOxygenationEvents`: Return the date of the last extraction of physical oxygenation events
+- `getLastExtractionDateOfBodyHeartRateEvents`: Return the date of the last extraction of body heart events
+- `getLastExtractionDateOfPhysicalHeartRateEvents`: Return the date of the last extraction of physical heart events
+- `getActivityEvents`: Fetch events of activity, the date should be in format YYYY-MM-DD
+- `getBodyOxygenationEvents`: Fetch events of body oxygenation, the date should be in format YYYY-MM-DD
+- `getPhysicalOxygenationEvents`: Fetch events of physical oxygenation, the date should be in format YYYY-MM-DD
+- `getBodyHeartRateEvents`: Fetch events of body heart rate, the date should be in format YYYY-MM-DD
+- `getPhysicalHeartRateEvents`: Fetch events of physical heart rate, the date should be in format YYYY-MM-DD
+
+**NOTE:** The date should be formatted as YYYY-MM-DD
+
+**Example**
+
+```tsx
+import React, { useState } from "react";
+import { Text, Button, StyleSheet, TextInput, ScrollView } from "react-native";
+import { useRookAHEvents } from "react-native-rook_ah";
+
+export const EventsScreen = () => {
+  const [date, setDate] = useState("");
+
+  const {
+    ready,
+    getLastExtractionDateOfActivityEvents,
+    getLastExtractionDateOfBodyOxygenationEvents,
+    getLastExtractionDateOfBodyHeartRateEvents,
+    getLastExtractionDateOfPhysicalOxygenationEvents,
+    getLastExtractionDateOfPhysicalHeartRateEvents,
+    getActivityEvents,
+    getBodyOxygenationEvents,
+    getPhysicalOxygenationEvents,
+    getBodyHeartRateEvents,
+    getPhysicalHeartRateEvents,
+  } = useRookAHEvents();
+
+  const onLastDate = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfActivityEvents();
+      console.log(response || "");
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onLastDateOxyEvents = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfBodyOxygenationEvents();
+      console.log(response || "");
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onLastDateHREvents = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfBodyHeartRateEvents();
+      console.log(response || "");
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onLastDatePOXEvents = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfPhysicalOxygenationEvents();
+      console.log(response || "");
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onLastDatePHREvents = async (): Promise<void> => {
+    try {
+      const response = await getLastExtractionDateOfPhysicalHeartRateEvents();
+      console.log(response || "");
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onActEvents = async (): Promise<void> => {
+    try {
+      const response = await getActivityEvents(date);
+      console.log(response);
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onBOE = async (): Promise<void> => {
+    try {
+      const response = await getBodyOxygenationEvents(date);
+      console.log(response);
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onPOE = async (): Promise<void> => {
+    try {
+      const response = await getPhysicalOxygenationEvents(date);
+      console.log(response);
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onBHR = async (): Promise<void> => {
+    try {
+      const response = await getBodyHeartRateEvents(date);
+      console.log(response);
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  const onPHR = async (): Promise<void> => {
+    try {
+      const response = await getPhysicalHeartRateEvents(date);
+      console.log(JSON.stringify(response[0]));
+      console.log(response);
+    } catch (error) {
+      console.log(`${error}`);
+    }
+  };
+
+  return ready ? (
+    <ScrollView>
+      <Text>Body</Text>
+
+      <TextInput
+        placeholder="yyyy-mm-dd"
+        style={styles.input}
+        value={date}
+        onChangeText={(text) => setDate(text)}
+      />
+
+      <Button
+        title="Last Extraction Date Of ActivityEvents"
+        onPress={onLastDate}
+      />
+
+      <Button
+        title="Last Extraction Date Of Body Oxygenation Events"
+        onPress={onLastDateOxyEvents}
+      />
+
+      <Button
+        title="Last Extraction Date Of Body Heart Rate Events"
+        onPress={onLastDateHREvents}
+      />
+
+      <Button
+        title="Last Extraction Date Of Physical Oxygenation Events"
+        onPress={onLastDatePOXEvents}
+      />
+
+      <Button
+        title="Last Extraction Date Of Physical Heart Rate Events"
+        onPress={onLastDatePHREvents}
+      />
+
+      <Button title="Activity Events" onPress={onActEvents} />
+      <Button title="Body Oxygenation Events" onPress={onBOE} />
+      <Button title="Physical Oxygenation Events" onPress={onPOE} />
+      <Button title="Body Heart Rate Events" onPress={onBHR} />
+      <Button title="Physical Heart Rate Events" onPress={onPHR} />
+
+      <JSONTree data={data} />
+    </ScrollView>
+  ) : (
+    <Text>Loading</Text>
+  );
+};
+
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: "5%",
+    borderColor: "white",
+    color: "white",
+    borderWidth: 1,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+});
 ```

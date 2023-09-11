@@ -1,6 +1,6 @@
 # SDK Apple Health in React Native
 
-Steps to integrate Apple Health Data extraction and transmission into your app.
+Steps to integrate Apple Health Data extraction and transmission into your app. If you need a more detailed description example look at out [demo app](https://github.com/RookeriesDevelopment/rook_demo_app_ios_react_native)
 
 ## Content
 

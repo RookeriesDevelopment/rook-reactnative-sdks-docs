@@ -1117,6 +1117,8 @@ const styles = StyleSheet.create({
 
 # For iOS <a id="ios"></a>
 
+If you need a more detailed description example look at out [demo app](https://github.com/RookeriesDevelopment/rook_demo_app_ios_react_native)
+
 ## Content
 
 1. [Installation](#installation-ios)

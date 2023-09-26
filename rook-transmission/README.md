@@ -15,7 +15,8 @@ If you need a more detailed description example look at out [demo app](https://g
    1. [useRookBodyTransmission](#useRookBodyTransmission)
    2. [useRookPhysicalTransmission](#useRookPhysicalTransmission)
    3. [useRookSleepTransmission](#useRookSleepTransmission)
-   4. [useRookTransmission](#useRookTransmission)
+   4. [useRookEventsTransmission](#useRookTransmission)
+   5. [useRookConfiguration](#useRookConfiguration)
 
 ## Installation <a id="instalation"></a>
 
@@ -1115,6 +1116,72 @@ const styles = StyleSheet.create({
 });
 ```
 
+### useRookConfiguration <a id="useRookConfiguration"></a>
+
+**Definition**
+
+This hook help you to update the timezone of the user
+
+```ts
+type HookProps = {
+  userID: string;
+};
+
+type TimezoneProps = {
+  timezone: string;
+  offset: number;
+};
+
+const useRookConfiguration: ({ userID }: HookProps) => {
+  ready: boolean;
+  updateUserTimeZone: (props: TimezoneProps) => Promise<boolean>;
+};
+```
+
+- `ready`: indicates when the hook is ready.
+- `updateUserTimeZone`: update the timezone of the user the offset must be between -18 and 18 and the timezone should be according to IANA Time Zone Database
+
+**Example**
+
+```tsx
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useRookConfiguration } from "react-native-rook-android-transmission";
+
+const ExampleComponent = () => {
+  const { updateUserTimeZone } = useRookConfiguration({
+    userID: "YOUR-USER-ID",
+  });
+
+  const handleButtonPress = () => {
+    const r = await updateUserTimeZone({
+      timezone: "America/Mexico_city",
+      offset: -6,
+    });
+
+    console.log(r);
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <TouchableOpacity
+        onPress={handleButtonPress}
+        style={{
+          backgroundColor: "blue",
+          padding: 10,
+          borderRadius: 5,
+          marginTop: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>Update Timezone</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default ExampleComponent;
+```
+
 # For iOS <a id="ios"></a>
 
 If you need a more detailed description example look at out [demo app](https://github.com/RookeriesDevelopment/rook_demo_app_ios_react_native)
@@ -1750,7 +1817,7 @@ export const OxygenationEventsView = () => {
 
 **Definition**
 
-If you need more details about BodySummary please use right click an **Go to definition** to se the whole definition
+This hook help you to update the timezone of the user
 
 ```ts
 type Props = {
@@ -1776,6 +1843,7 @@ const useRookAHConfiguration: ({ userID }: Props) => {
 ```tsx
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useRookAHConfiguration } from "react-native-rook-ios-transmission";
 
 const ExampleComponent = () => {
   const { uploadUserTimezone } = useRookAHConfiguration({

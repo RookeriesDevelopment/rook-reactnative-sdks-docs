@@ -1130,6 +1130,7 @@ If you need a more detailed description example look at out [demo app](https://g
    4. [useRookAHActivityEventsTransmission](#useRookAHActivityEventsTransmission)
    5. [useRookAHOxygenationEventsTransmission](#useRookAHOxygenationEventsTransmission)
    6. [useRookAHHeartRateEventsTransmission](#useRookAHHeartRateEventsTransmission)
+   7. [useRookAHConfiguration](#useRookAHConfiguration)
 
 ## Installation <a id="instalation-ios"></a>
 
@@ -1743,4 +1744,69 @@ export const OxygenationEventsView = () => {
     </View>
   );
 };
+```
+
+### useRookAHConfiguration <a id="useRookAHConfiguration"></a>
+
+**Definition**
+
+If you need more details about BodySummary please use right click an **Go to definition** to se the whole definition
+
+```ts
+type Props = {
+  userID: string;
+};
+
+type TimezoneProps = {
+  timezone: string;
+  offset: number;
+};
+
+const useRookAHConfiguration: ({ userID }: Props) => {
+  ready: boolean;
+  uploadUserTimezone: (props: TimezoneProps) => Promise<boolean>;
+};
+```
+
+- `ready`: indicates when the hook is ready.
+- `uploadUserTimezone`: update the timezone of the user the offset must be between -18 and 18 and the timezone should be according to IANA Time Zone Database
+
+**Example**
+
+```tsx
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+
+const ExampleComponent = () => {
+  const { uploadUserTimezone } = useRookAHConfiguration({
+    userID: "YOUR-USER-ID",
+  });
+
+  const handleButtonPress = () => {
+    const r = await uploadUserTimezone({
+      timezone: "America/Mexico_city",
+      offset: -6,
+    });
+
+    console.log(r);
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <TouchableOpacity
+        onPress={handleButtonPress}
+        style={{
+          backgroundColor: "blue",
+          padding: 10,
+          borderRadius: 5,
+          marginTop: 20,
+        }}
+      >
+        <Text style={{ color: "white" }}>Update Timezone</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default ExampleComponent;
 ```

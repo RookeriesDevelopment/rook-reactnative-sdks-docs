@@ -78,7 +78,7 @@ If you need more details about BodySummary please use right click an **Go to def
 
 ```ts
 type HookProps = {
-  userID: string | number;
+  userID: string;
 };
 
 
@@ -105,7 +105,7 @@ import { useRookHCBody } from "react-native-rook-health-connect";
 
 type BodyTransmissionProps = {
   date: string;
-  userID: string | number;
+  userID: string;
 };
 
 export const BodyTransmission: FC<BodyTransmissionProps> = ({
@@ -179,7 +179,7 @@ If you need more details about PhysicalSummary please use right click an **Go to
 
 ```ts
 type HookProps = {
-  userID: string | number;
+  userID: string;
 };
 
 
@@ -214,7 +214,7 @@ import { useRookHCPhysical } from "react-native-rook-health-connect";
 
 type PhysicalTransmissionProps = {
   date: string;
-  userID: string | number;
+  userID: string;
 };
 
 export const PhysicalTransmission: FC<PhysicalTransmissionProps> = ({
@@ -327,7 +327,7 @@ If you need more details about BodySummary please use right click an **Go to def
 
 ```ts
 type HookProps = {
-  userID: string | number;
+  userID: string;
 };
 
 
@@ -354,7 +354,7 @@ import { useRookHCSleep } from "react-native-rook-health-connect";
 
 type SleepTransmissionProps = {
   date: string;
-  userID: string | number;
+  userID: string;
 };
 
 export const SleepTransmission: FC<SleepTransmissionProps> = ({
@@ -441,7 +441,7 @@ This information should be retrieved form `react-native-android-health-connect`
 
 ```ts
 type HookProps = {
-  userID: string | number;
+  userID: string;
 };
 
 
@@ -537,12 +537,12 @@ interface useRookSleepTransmission {
 ```tsx
 import React, { FC, useState } from "react";
 import { Text, StyleSheet, Button, View } from "react-native";
-import { useRookTransmission } from "react-native-rook-android-transmission";
+import { useRookEventsTransmission } from "react-native-rook-android-transmission";
 import { useRookHCEvents } from "react-native-rook-health-connect";
 
 type BodyTransmissionProps = {
   date: string;
-  userID: string | number;
+  userID: string;
 };
 
 export const EventsTransmission: FC<BodyTransmissionProps> = ({
@@ -592,7 +592,7 @@ export const EventsTransmission: FC<BodyTransmissionProps> = ({
     enqueueTemperatureEvent,
     clearQueuedTemperatureEvents,
     uploadTemperatureEvents,
-  } = useRookTransmission({ userID });
+  } = useRookEventsTransmission({ userID });
 
   const [response, setResponse] = useState("{}");
 

@@ -1186,12 +1186,14 @@ type BodyProps = {
 };
 
 export declare const useRookAHBodyTransmission: ({ userID }: BodyProps) => {
+  ready: boolean;
   enqueueBodySummary: (date: string, data: BodySummary) => Promise<boolean>;
   getBodySummariesStored: () => Promise<any>;
   uploadBodySummaries: () => Promise<any>;
 };
 ```
 
+- `ready`: indicates when the hook is ready.
 - `enqueueBodySummary`: saves the body summary to queue to later upload
   - `date`: indicates the date of the body summary
   - `data`: it's the summary to save
@@ -1280,12 +1282,14 @@ type SleepProps = {
   userID: string;
 };
 export declare const useRookAHSleepTransmission: ({ userID }: SleepProps) => {
+  ready: boolean;
   saveSleepSummary: (data: SleepSummary) => Promise<boolean>;
   getSleepSummariesStored: () => Promise<any>;
   uploadSleepSummaries: () => Promise<any>;
 };
 ```
 
+- `ready`: indicates when the hook is ready.
 - `saveSleepSummary`: saves the sleep summary to queue to later upload
   - `data`: it's the summary to save
 - `getSleepSummariesStored`: Retrieves the queue saved into the device
@@ -1375,6 +1379,7 @@ type PhysicalProps = {
 export declare const useRookAHPhysicalTransmission: ({
   userID,
 }: PhysicalProps) => {
+  ready: boolean;
   enqueuePhysicalSummary: (
     date: string,
     data: PhysicalSummary
@@ -1384,6 +1389,7 @@ export declare const useRookAHPhysicalTransmission: ({
 };
 ```
 
+- `ready`: indicates when the hook is ready.
 - `enqueuePhysicalSummary`: saves the physical summary to queue to later upload
   - `data`: it's the summary to save
 - `getPhysicalSummariesStored`: Retrieves the queue saved into the device
@@ -1477,12 +1483,14 @@ type ActivityProps = {
   userID: string;
 };
 const useRookAHActivityEventsTransmission: ({ userID }: ActivityProps) => {
+  ready: boolean;
   enqueueActivityEvents: (data: ActivityEvent[]) => Promise<boolean>;
   getCountActivityEvents: () => Promise<number>;
   uploadActivityEvents: () => Promise<boolean>;
 };
 ```
 
+- `ready`: indicates when the hook is ready.
 - `enqueueActivityEvents`: saves the activity events to queue to later upload
   - `data`: it's the summary to save
 - `getCountActivityEvents`: Retrieves the number of activity events queued to upload
@@ -1560,6 +1568,7 @@ type HeartRateProps = {
   userID: string;
 };
 const useRookAHHeartRateEventsTransmission: ({ userID }: HeartRateProps) => {
+  ready: boolean;
   enqueueHeartRateEvents: (data: BodyHeartRateEvent[]) => Promise<boolean>;
   getCountPhysicalHeartRateEvents: () => Promise<number>;
   getCountBodyHeartRateEvents: () => Promise<number>;
@@ -1567,6 +1576,7 @@ const useRookAHHeartRateEventsTransmission: ({ userID }: HeartRateProps) => {
 };
 ```
 
+- `ready`: indicates when the hook is ready.
 - `enqueueHeartRateEvents`: saves the heart rate events to queue to later upload
   - `data`: it's the summary to save
 - `getCountPhysicalHeartRateEvents`: Retrieves the number of physical heart events queued to upload
@@ -1653,6 +1663,7 @@ type OxygenationProps = {
 const useRookAHOxygenationEventsTransmission: ({
   userID,
 }: OxygenationProps) => {
+  ready: boolean;
   enqueueOxygenationEvents: (data: BodyOxygenationEvent[]) => Promise<boolean>;
   getCountPhysicalOxygenationEvents: () => Promise<number>;
   getCountBodyOxygenationEvents: () => Promise<number>;
@@ -1660,6 +1671,7 @@ const useRookAHOxygenationEventsTransmission: ({
 };
 ```
 
+- `ready`: indicates when the hook is ready.
 - `enqueueOxygenationEvents`: saves the heart rate events to queue to later upload
   - `data`: it's the summary to save
 - `getCountPhysicalOxygenationEvents`: Retrieves the number of physical oxygenation queued to upload

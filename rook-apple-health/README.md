@@ -192,6 +192,7 @@ interface RookAHPermissions {
   requestPhysicalPermissions: () => Promise<void>;
   requestBodyPermissions: () => Promise<void>;
   requestAllPermissions: () => Promise<void>;
+  getUserTimeZone: () => Promise<boolean>;
 }
 ```
 
@@ -200,6 +201,7 @@ interface RookAHPermissions {
 - `requestPhysicalPermissions`: Request permission to read Physical Data
 - `requestBodyPermissions`: Request permission to read Body Data
 - `requestAllPermissions`: Request to read all data
+- `getUserTimeZone`: get the current time zone of the user
 
 **Example**
 

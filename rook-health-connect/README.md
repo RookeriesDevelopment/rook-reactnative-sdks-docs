@@ -242,6 +242,7 @@ const useRookHCPermissions: () => RookHCPermissions;
 
 interface RookHCPermissions {
   checkAvailability: () => Promise<AvailabilityStatus>;
+  getUserTimeZone: () => Promise<UserTimeZone>;
   hasAllPermissions: () => Promise<boolean>;
   requestPermissions: () => Promise<void>;
   openHealthConnectSettings: () => Promise<void>;
@@ -260,6 +261,7 @@ Return
   - `NOT_INSTALLED` means health connect services are available but is necessary to install the health connect app into the device
   - `NOT_SUPPORTED` means health connect services are not available
 
+- `getUserTimeZone` : Get the user time zone
 - `hasAllPermissions`: Check if the you already request all health connect permissions
 - `requestPermissions`: Request all health connect permissions
 - `openHealthConnectSettings`: Open the health connect settings

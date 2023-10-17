@@ -44,7 +44,7 @@ const App => () {
     <RookConnectProvider
       keys={{
         clientUUID: 'YOUR-CLIENT-UUID',
-        apiURL: 'API-URL',
+        environment: "sandbox | production",
         password: 'YOUR-PASSWORD',
       }}>
       <YourComponents />
@@ -568,10 +568,8 @@ interface RookHCEvents {
   getBodyMetricsEvents: (date: string) => Promise<HCBodyMetricsEvent>;
   getBodyHeartRateEvents: (date: string) => Promise<HCHeartRateEvent>;
   getBodyHydrationEvents: (date: string) => Promise<HCHydrationEvent>;
-  getBodyMoodEvents: (date: string) => Promise<HCMoodEvent>;
   getBodyNutritionEvents: (date: string) => Promise<HCNutritionEvent>;
   getBodyOxygenationEvents: (date: string) => Promise<HCOxygenationEvent>;
-  getPhysicalStressEvents: (date: string) => Promise<HCPhysicalEventStressData>;
   getBodyTemperatureEvents: (date: string) => Promise<HCTemperatureEvent>;
 }
 ```
@@ -581,10 +579,8 @@ interface RookHCEvents {
 - `getBodyMetricsEvents`: Fetch events of body metrics like height, weight, bmi and others, the date should be in format YYYY-MM-DD
 - `getBodyHeartRateEvents`: Fetch events of heart rate, the date should be in format YYYY-MM-DD
 - `getBodyHydrationEvents`: Fetch events of hydration, the date should be in format YYYY-MM-DD
-- `getBodyMoodEvents`: Fetch events of body mood, the date should be in format YYYY-MM-DD
 - `getBodyNutritionEvents`: Fetch events of nutrition like calories, protein, fat, alcohol in take, the date should be in format YYYY-MM-DD
 - `getBodyOxygenationEvents`: Fetch events of oxygenation, the date should be in format YYYY-MM-DD
-- `getPhysicalStressEvents`: Fetch events of physical stress, the date should be in format YYYY-MM-DD
 - `getBodyTemperatureEvents`: Fetch events of body temperature, the date should be in format YYYY-MM-DD
 
 **NOTE:** The date should be formatted as YYYY-MM-DD
@@ -603,10 +599,8 @@ export const EventsView = () => {
     getBodyMetricsEvents,
     getBodyHeartRateEvents,
     getBodyHydrationEvents,
-    getBodyMoodEvents,
     getBodyNutritionEvents,
     getBodyOxygenationEvents,
-    getPhysicalStressEvents,
     getBodyTemperatureEvents,
   } = useRookHCEvents();
 
@@ -657,15 +651,6 @@ export const EventsView = () => {
     }
   };
 
-  const handleBodyMoodEvents = async (): Promise<void> => {
-    try {
-      const result = await getBodyMoodEvents(date);
-      console.log(result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleBodyNutritionEvents = async (): Promise<void> => {
     try {
       const result = await getBodyNutritionEvents(date);
@@ -678,15 +663,6 @@ export const EventsView = () => {
   const handleBodyOxygenationEvents = async (): Promise<void> => {
     try {
       const result = await getBodyOxygenationEvents(date);
-      console.log(result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handlePhysicalStressEvents = async (): Promise<void> => {
-    try {
-      const result = await getPhysicalStressEvents(date);
       console.log(result);
     } catch (error) {
       console.log(error);
@@ -717,13 +693,11 @@ export const EventsView = () => {
         onPress={handleBodyHeartRateEvents}
       />
       <Button title="Hydration Events" onPress={handleBodyHydrationEvents} />
-      <Button title="Mood Events" onPress={handleBodyMoodEvents} />
       <Button title="Nutrition Events" onPress={handleBodyNutritionEvents} />
       <Button
         title="Oxygenation Events"
         onPress={handleBodyOxygenationEvents}
       />
-      <Button title="Stress Events" onPress={handlePhysicalStressEvents} />
       <Button
         title="Temperature Events"
         onPress={handlePhysicalTemperatureEvents}

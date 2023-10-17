@@ -48,7 +48,7 @@ const App => () {
     <RookConnectProvider
       keys={{
         clientUUID: 'YOUR-CLIENT-UUID',
-        apiURL: 'API-URL',
+        environment: "sandbox | production",
         password: 'YOUR-PASSWORD',
       }}>
       <YourComponents />

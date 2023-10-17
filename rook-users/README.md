@@ -11,13 +11,13 @@ This SDK allows the [client](https://docs.tryrook.io/docs/Definitions/#client) t
 **npm**
 
 ```bash
-npm i rook_users
+npm i rook_users react-native-mmkv
 ```
 
 **yarn**
 
 ```bash
-npm add rook_users
+npm add rook_users react-native-mmkv
 ```
 
 ### Configuration
@@ -29,7 +29,7 @@ import { RookConnectProvider } from 'rook_auth'
 <RookConnectProvider
   keys={{
     clientUUID: "YOUR-CLIENT-UUID",
-    apiURL: "API-URL-ENVIROMENT",
+    environment: "sandbox | production",
     password: "YOUR-PASSWORD",
   }}
 >

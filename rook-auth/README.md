@@ -23,7 +23,7 @@ import { RookConnectProvider } from 'rook_auth'
 <RookConnectProvider
   keys={{
     clientUUID: "YOUR-CLIENT-UUID",
-    apiURL: "API-URL-ENVIROMENT",
+    environment: "sandbox | production",
     password: "YOUR-PASSWORD",
   }}
 >

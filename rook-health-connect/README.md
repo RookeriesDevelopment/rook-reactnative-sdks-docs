@@ -88,49 +88,15 @@ Your `AndroidManifest.xml` file should look like this
 
 ```
 
-Other file that we need to visit is the `android/settings.gradle` include the next code
-
-```gradle
-include ':react-native-shared-preferences', ':app'
-project(':react-native-shared-preferences').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-shared-preferences/android')
-```
-
-In `android/app/build.gradle`
-
-```
-dependencies {
-  ...
-  implementation project(":react-native-shared-preferences")
-}
-```
-
 Into the same file we need to set the `minSdkVersion` and `targetSdkVerion`
 
 ```gradle
 android {
   ...
   minSdkVersion: 26
-  targetSdkVersion 33
+  targetSdkVersion 34
   ...
 }
-```
-
-The last step register the modules in `MainApplication.java`
-
-```java
-  import in.sriraman.sharedpreferences.RNSharedPreferencesReactPackage;
-
-  public class MainApplication extends Application implements ReactApplication {
-
-    @Override
-    protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = new PackageList(this).getPackage();
-
-      packages.add(new RNSharedPreferencesReactPackage());
-
-      return packages;
-    }
-  }
 ```
 
 ## Package usage <a id="packageUsage"></a>

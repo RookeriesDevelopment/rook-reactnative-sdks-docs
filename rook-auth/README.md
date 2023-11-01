@@ -4,13 +4,13 @@ Instalation
 **npm**
 
 ```bash
-npm i rook_auth @react-native-async-storage/async-storage
+npm i rook_auth
 ```
 
 **yarn**
 
 ```bash
-yarn add rook_auth @react-native-async-storage/async-storage
+yarn add rook_auth
 ```
 
 **Note: If you are on iOS please run _npx pod-install_**

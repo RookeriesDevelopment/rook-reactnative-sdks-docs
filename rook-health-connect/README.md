@@ -78,17 +78,32 @@ Your `AndroidManifest.xml` file should look like this
             ...
         </intent-filter>
 
+          <!-- For supported versions through Android 13, create an activity to show the rationale
+        of Health Connect permissions once users click the privacy policy link. -->
           <intent-filter>
               <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
           </intent-filter>
-
       </activity>
+
+      <!-- For versions starting Android 14, create an activity alias to show the rationale
+     of Health Connect permissions once users click the privacy policy link. -->
+      <activity-alias
+        android:name="ViewPermissionUsageActivity"
+        android:exported="true"
+        android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
+        android:targetActivity=".MainActivity">
+
+        <intent-filter>
+          <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+          <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+        </intent-filter>
+      </activity-alias>
     </application>
 </manifest>
 
 ```
 
-Into the same file we need to set the `minSdkVersion` and `targetSdkVerion`
+Into the same file we need to set the `minSdkVersion`, `targetSdkVerion`
 
 ```gradle
 android {
@@ -98,6 +113,28 @@ android {
   ...
 }
 ```
+
+#### Obfuscation
+
+If you are using obfuscation consider the following:
+
+In your gradle.properties (Project level) add the following to disable R8 full mode:
+
+```properties
+android.enableR8.fullMode=false
+```
+
+If you want to enable full mode add the following rules to proguard-rules.pro:
+
+````text
+# Keep generic signature of Call, Response (R8 full mode strips signatures from non-kept items).
+-keep,allowobfuscation,allowshrinking interface retrofit2.Call
+-keep,allowobfuscation,allowshrinking class retrofit2.Response
+
+# With R8 full mode generic signatures are stripped for classes that are not
+# kept. Suspend functions are wrapped in continuations where the type argument
+# is used.
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 
 ## Package usage <a id="packageUsage"></a>
 
@@ -112,15 +149,11 @@ const useRookHCBody: () => RookHCBody;
 
 interface RookHCBody {
   getBodySummaryLastDate: () => Promise<string>;
-  hasBodyPermissions: () => Promise<boolean>;
-  requestBodyPermissions: () => Promise<void>;
   getBodySummary: (date: string) => Promise<BodySummary>;
 }
-```
+````
 
 - `getBodySummaryLastDate`: Check the last date when you fetch data of body data
-- `hasBodyPermissions`: Return a boolean showing if body data are allowed
-- `requestBodyPermissions`: Request permissions only for body data
 - `getBodySummary`: Fetch body summary, the date should be in format YYYY-MM-DD
 
 **NOTE:** The date should be formatted as YYYY-MM-DD
@@ -136,34 +169,12 @@ export const BodyExample = () => {
   const [date, setDate] = useState("");
   const [data, setData] = useState("{}");
 
-  const {
-    getBodySummaryLastDate,
-    hasBodyPermissions,
-    requestBodyPermissions,
-    getBodySummary,
-  } = useRookHCBody();
+  const { getBodySummaryLastDate, getBodySummary } = useRookHCBody();
 
   const handleLastDate = async (): Promise<void> => {
     try {
       const result = await getBodySummaryLastDate();
       setData(result);
-    } catch (error) {
-      setData(`${error}`);
-    }
-  };
-
-  const handlePermissions = async (): Promise<void> => {
-    try {
-      const result = await hasBodyPermissions();
-      setData(`hasPermissions ${result}`);
-    } catch (error) {
-      setData(`${error}`);
-    }
-  };
-
-  const handleRequestPermissions = async (): Promise<void> => {
-    try {
-      await requestBodyPermissions();
     } catch (error) {
       setData(`${error}`);
     }
@@ -187,11 +198,6 @@ export const BodyExample = () => {
         onChangeText={(text) => setDate(text)}
       />
       <Button title="last Date" onPress={handleLastDate} />
-      <Button title="hasAllPermissions" onPress={handlePermissions} />
-      <Button
-        title="requestAllPermissions"
-        onPress={handleRequestPermissions}
-      />
       <Button title="get summary" onPress={handleSummary} />
       <Text>{data}</Text>
     </View>
@@ -206,13 +212,16 @@ export const BodyExample = () => {
 ```ts
 const useRookHCPermissions: () => RookHCPermissions;
 
-interface RookHCPermissions {
-  checkAvailability: () => Promise<AvailabilityStatus>;
+export type PermissionType = "SLEEP" | "PHYSICAL" | "BODY" | "ALL";
+
+const useRookHCPermissions: () => {
+  ready: boolean;
   getUserTimeZone: () => Promise<UserTimeZone>;
-  hasAllPermissions: () => Promise<boolean>;
-  requestPermissions: () => Promise<void>;
+  checkAvailability: () => Promise<AvailabilityStatus>;
+  checkPermissions: (permission: PermissionType) => Promise<boolean>;
+  requestPermissions: (permission: PermissionType) => Promise<void>;
   openHealthConnectSettings: () => Promise<void>;
-}
+};
 
 type AvailabilityStatus = "INSTALLED" | "NOT_INSTALLED" | "NOT_SUPPORTED";
 ```
@@ -228,50 +237,58 @@ Return
   - `NOT_SUPPORTED` means health connect services are not available
 
 - `getUserTimeZone` : Get the user time zone
-- `hasAllPermissions`: Check if the you already request all health connect permissions
-- `requestPermissions`: Request all health connect permissions
+- `checkPermissions`: Check if you have the permissions.
+- `requestPermissions`: Request the permissions.
 - `openHealthConnectSettings`: Open the health connect settings
 
 **Example**
 
 ```tsx
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Button } from "react-native";
-import { useRookHCPermissions } from "rook_health_connect";
+import { useRookHCPermissions } from "react-native-rook-health-connect";
 
-export const PermissionsExample = () => {
-  const [data, setData] = useState("");
-
+export const PermissionsView = () => {
   const {
     checkAvailability,
-    hasAllPermissions,
+    checkPermissions,
     requestPermissions,
     openHealthConnectSettings,
+    getUserTimeZone,
   } = useRookHCPermissions();
 
-  const handleAvailability = async (): Promise<void> => {
+  const handlePress = async (): Promise<void> => {
     try {
       const result = await checkAvailability();
-      setData(result);
+      console.log(result);
     } catch (error) {
-      setData(`${error}`);
+      console.log(error);
     }
   };
 
   const handlePermissions = async (): Promise<void> => {
     try {
-      const result = await hasAllPermissions();
-      setData(`has permissions ${result}`);
+      const result = await checkPermissions("ALL");
+      console.log(result);
     } catch (error) {
-      setData(`${error}`);
+      console.log(error);
+    }
+  };
+
+  const handleTimeZone = async (): Promise<void> => {
+    try {
+      const result = await getUserTimeZone();
+      console.log(result);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const handleRequestPermissions = async (): Promise<void> => {
     try {
-      await requestPermissions();
+      await requestPermissions("ALL");
     } catch (error) {
-      setData(`${error}`);
+      console.log(error);
     }
   };
 
@@ -279,21 +296,21 @@ export const PermissionsExample = () => {
     try {
       await openHealthConnectSettings();
     } catch (error) {
-      setData(`${error}`);
+      console.log(error);
     }
   };
 
   return (
     <View>
-      <Text>Hola</Text>
-      <Button title="Availability" onPress={handleAvailability} />
+      <Text>Permisos</Text>
+      <Button title="Availability" onPress={handlePress} />
       <Button title="hasAllPermissions" onPress={handlePermissions} />
+      <Button title="get user TimeZone" onPress={handleTimeZone} />
       <Button
         title="requestAllPermissions"
         onPress={handleRequestPermissions}
       />
       <Button title="openHC" onPress={handleOpen} />
-      <Text>{data}</Text>
     </View>
   );
 };
@@ -311,8 +328,6 @@ const useRookHCPhysical: () => RookHCPhysical;
 interface RookHCPhysical {
   getPhysicalSummaryLastDate: () => Promise<string>;
   getPhysicalEventsLastDate: () => Promise<string>;
-  hasPhysicalPermissions: () => Promise<boolean>;
-  requestPhysicalPermissions: () => Promise<void>;
   getPhysicalSummary: (date: string) => Promise<PhysicalSummary>;
   getPhysicalEvents: (date: string) => Promise<PhysicalEvent[]>;
 }
@@ -320,8 +335,6 @@ interface RookHCPhysical {
 
 - `getPhysicalSummaryLastDate`: Check the last date when you fetch data of physical summary
 - `getPhysicalEventsLastDate`: Check the last date when you fetch data of physical events
-- `hasPhysicalPermissions`: Return a boolean showing if physical data are allowed
-- `requestPhysicalPermissions`: Request permissions only for physical data
 - `getPhysicalSummary`: Fetch physical summary, the date should be in format YYYY-MM-DD
 - `getPhysicalEvents`: Fetch physical events, the date should be in format YYYY-MM-DD
 
@@ -341,8 +354,6 @@ export const PhysicalView = () => {
   const {
     getPhysicalSummaryLastDate,
     getPhysicalEventsLastDate,
-    hasPhysicalPermissions,
-    requestPhysicalPermissions,
     getPhysicalSummary,
     getPhysicalEvents,
   } = useRookHCPhysical();
@@ -360,23 +371,6 @@ export const PhysicalView = () => {
     try {
       const result = await getPhysicalEventsLastDate();
       setData(result);
-    } catch (error) {
-      setData(`${error}`);
-    }
-  };
-
-  const handlePermissions = async (): Promise<void> => {
-    try {
-      const result = await hasPhysicalPermissions();
-      setData(`hasPermissions ${result}`);
-    } catch (error) {
-      setData(`${error}`);
-    }
-  };
-
-  const handleRequestPermissions = async (): Promise<void> => {
-    try {
-      await requestPhysicalPermissions();
     } catch (error) {
       setData(`${error}`);
     }
@@ -409,11 +403,6 @@ export const PhysicalView = () => {
       />
       <Button title="last Date" onPress={handleLastDate} />
       <Button title="last Date event" onPress={handleLastDateEvent} />
-      <Button title="hasAllPermissions" onPress={handlePermissions} />
-      <Button
-        title="requestAllPermissions"
-        onPress={handleRequestPermissions}
-      />
       <Button title="get summary" onPress={handleSummary} />
       <Button title="get summary event" onPress={handleEventSummary} />
       <Text>{data}</Text>
@@ -433,15 +422,11 @@ const useRookHCSleep: () => RookHCSleep;
 
 interface RookHCSleep {
   getSleepSummaryLastDate: () => Promise<string>;
-  hasSleepPermissions: () => Promise<boolean>;
-  requestSleepPermissions: () => Promise<void>;
   getSleepSummary: (date: string) => Promise<SleepSummary>;
 }
 ```
 
 - `getSleepSummaryLastDate`: Check the last date when you fetch data of sleep data
-- `hasSleepPermissions`: Return a boolean showing if sleep data are allowed
-- `requestSleepPermissions`: Request permissions only for sleep data
 - `getSleepSummary`: Fetch sleep summary, the date should be in format YYYY-MM-DD
 
 **NOTE:** The date should be formatted as YYYY-MM-DD
@@ -457,34 +442,12 @@ export const SleepView = () => {
   const [date, setDate] = useState("");
   const [data, setData] = useState("{}");
 
-  const {
-    getSleepSummaryLastDate,
-    hasSleepPermissions,
-    requestSleepPermissions,
-    getSleepSummary,
-  } = useRookHCSleep();
+  const { getSleepSummaryLastDate, getSleepSummary } = useRookHCSleep();
 
   const handleLastDate = async (): Promise<void> => {
     try {
       const result = await getSleepSummaryLastDate();
       setData(result);
-    } catch (error) {
-      setData(`${error}`);
-    }
-  };
-
-  const handlePermissions = async (): Promise<void> => {
-    try {
-      const result = await hasSleepPermissions();
-      setData(`hasPermissions ${result}`);
-    } catch (error) {
-      setData(`${error}`);
-    }
-  };
-
-  const handleRequestPermissions = async (): Promise<void> => {
-    try {
-      await requestSleepPermissions();
     } catch (error) {
       setData(`${error}`);
     }
@@ -507,11 +470,6 @@ export const SleepView = () => {
         onChangeText={(text) => setDate(text)}
       />
       <Button title="last Date" onPress={handleLastDate} />
-      <Button title="hasAllPermissions" onPress={handlePermissions} />
-      <Button
-        title="requestAllPermissions"
-        onPress={handleRequestPermissions}
-      />
       <Button title="get summary" onPress={handleSummary} />
       <Text>{data}</Text>
     </View>

@@ -100,7 +100,6 @@ Your `AndroidManifest.xml` file should look like this
       </activity-alias>
     </application>
 </manifest>
-
 ```
 
 Into the same file we need to set the `minSdkVersion`, `targetSdkVerion`

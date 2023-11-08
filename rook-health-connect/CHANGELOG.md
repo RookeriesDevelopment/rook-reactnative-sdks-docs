@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.5.0
+
+**BREAKING CHANGES**
+
+- The only way to request permissions is with the hook of permissions.
+- Into the extraction hooks no longer have the ability to request permissions.
+
 ## 0.2.2
 
 **BREAKING CHANGES**
